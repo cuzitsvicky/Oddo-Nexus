@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import {
   Users,
   MessageCircle,
@@ -18,12 +19,12 @@ import {
   Coffee,
   Terminal,
 } from "lucide-react";
-import Footer from "../Components/Footer.jsx";
 
 export default function About() {
   const [hoveredMember, setHoveredMember] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [activeFeature, setActiveFeature] = useState(0);
+  const navigate = useNavigate();
 
   const features = [
     {
@@ -367,7 +368,10 @@ export default function About() {
               Be part of a community that's reshaping how people collaborate,
               learn, and grow together.
             </p>
-            <button className="bg-gradient-to-r from-black to-gray-800 text-white px-8 py-4 rounded-full text-lg font-medium hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="bg-gradient-to-r from-black to-gray-800 text-white px-8 py-4 rounded-full text-lg font-medium hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
               Get Started Today
             </button>
           </div>
