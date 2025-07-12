@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+
 import {
   ChevronDown,
   Play,
@@ -232,8 +233,8 @@ export default function Index() {
               </a>
             ))}
           </div>
-          <button 
-            onClick={() => navigate('/dashboard')}
+          <button
+            onClick={() => navigate("/dashboard")}
             className="bg-gradient-to-r from-black to-gray-800 text-white px-6 py-2 rounded-full hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 hover:shadow-lg relative overflow-hidden group"
           >
             <span className="relative z-10">Get Started</span>
@@ -290,8 +291,8 @@ export default function Index() {
                 animationDelay: "0.6s",
               }}
             >
-              <button 
-                onClick={() => navigate('/dashboard')}
+              <button
+                onClick={() => navigate("/dashboard")}
                 className="group bg-gradient-to-r from-black to-gray-800 text-white px-8 py-4 rounded-full text-lg font-medium hover:from-gray-900 hover:to-black transition-all duration-500 transform hover:scale-110 shadow-lg hover:shadow-2xl relative overflow-hidden"
               >
                 <span className="flex items-center space-x-2 relative z-10">
@@ -525,8 +526,8 @@ export default function Index() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button 
-                  onClick={() => navigate('/dashboard')}
+                <button
+                  onClick={() => navigate("/dashboard")}
                   className="group bg-gradient-to-r from-black to-gray-800 text-white px-8 py-4 rounded-full text-lg font-medium hover:from-gray-900 hover:to-black transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl relative overflow-hidden"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
