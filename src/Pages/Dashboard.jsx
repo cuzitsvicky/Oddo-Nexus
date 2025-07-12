@@ -1,17 +1,23 @@
-"use client"
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { ChevronDown, Search, Star, Users, ArrowRight, Menu, X } from "lucide-react"
+import React, { useState, useEffect } from "react";
+import {
+  ChevronDown,
+  Search,
+  Star,
+  Users,
+  ArrowRight,
+  Menu,
+  X,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
-
-const availabilityOptions = ["All", "Available", "Busy", "Offline"]
-
+const availabilityOptions = ["All", "Available", "Busy", "Offline"];
 
 function SwapRequestBadge() {
   const [pendingCount, setPendingCount] = useState(0);
-  const currentUserId = localStorage.getItem('userId');
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (currentUserId) {
@@ -21,14 +27,16 @@ function SwapRequestBadge() {
 
   const fetchPendingCount = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/swap-requests/received/${currentUserId}`);
+      const response = await fetch(
+        `http://localhost:4000/api/swap-requests/received/${currentUserId}`
+      );
       if (response.ok) {
         const requests = await response.json();
-        const pending = requests.filter(r => r.status === 'pending').length;
+        const pending = requests.filter((r) => r.status === "pending").length;
         setPendingCount(pending);
       }
     } catch (err) {
-      console.error('Error fetching pending count:', err);
+      console.error("Error fetching pending count:", err);
     }
   };
 
@@ -44,7 +52,7 @@ function SwapRequestBadge() {
 // Chat Badge Component
 function ChatBadge() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const currentUserId = localStorage.getItem('userId');
+  const currentUserId = localStorage.getItem("userId");
 
   useEffect(() => {
     if (currentUserId) {
@@ -55,14 +63,19 @@ function ChatBadge() {
   const fetchUnreadCount = async () => {
     try {
       // Get all active chats and sum up unread messages
-      const response = await fetch(`http://localhost:4000/api/chat/user/${currentUserId}`);
+      const response = await fetch(
+        `http://localhost:4000/api/chat/user/${currentUserId}`
+      );
       if (response.ok) {
         const chats = await response.json();
-        const totalUnread = chats.reduce((sum, chat) => sum + (chat.unread_count || 0), 0);
+        const totalUnread = chats.reduce(
+          (sum, chat) => sum + (chat.unread_count || 0),
+          0
+        );
         setUnreadCount(totalUnread);
       }
     } catch (err) {
-      console.error('Error fetching unread count:', err);
+      console.error("Error fetching unread count:", err);
     }
   };
 
@@ -70,30 +83,29 @@ function ChatBadge() {
 
   return (
     <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-      {unreadCount > 9 ? '9+' : unreadCount}
+      {unreadCount > 9 ? "9+" : unreadCount}
     </span>
   );
 }
 
 export default function SkillSwapUI() {
-  const [availabilityFilter, setAvailabilityFilter] = useState("All")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [currentPage, setCurrentPage] = useState(2)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false)
-  const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [availabilityFilter, setAvailabilityFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   // Close dropdowns when clicking outside
   const handleClickOutside = (event) => {
-    if (showDropdown && !event.target.closest('.availability-dropdown')) {
+    if (showDropdown && !event.target.closest(".availability-dropdown")) {
       setShowDropdown(false);
     }
-    if (showProfileDropdown && !event.target.closest('.profile-dropdown')) {
+    if (showProfileDropdown && !event.target.closest(".profile-dropdown")) {
       setShowProfileDropdown(false);
     }
   };
@@ -103,22 +115,24 @@ export default function SkillSwapUI() {
     try {
       setLoading(true);
       setError(null);
-      
-      console.log('Fetching users from API...');
-      const response = await fetch('http://localhost:4000/api/dashboard/users');
-      console.log('Response status:', response.status);
-      
+
+      console.log("Fetching users from API...");
+      const response = await fetch("http://localhost:4000/api/dashboard/users");
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error(
+          errorData.error || `HTTP ${response.status}: ${response.statusText}`
+        );
       }
-      
+
       const data = await response.json();
-      console.log('Fetched users:', data);
+      console.log("Fetched users:", data);
       setUsers(data);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching users:', err);
+      console.error("Error fetching users:", err);
     } finally {
       setLoading(false);
     }
@@ -126,9 +140,9 @@ export default function SkillSwapUI() {
 
   // Add event listener for clicking outside
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [showDropdown, showProfileDropdown]);
 
@@ -137,27 +151,36 @@ export default function SkillSwapUI() {
     fetchUsers();
   }, []);
 
-  const currentUserId = localStorage.getItem('userId');
-  console.log('Current user ID:', currentUserId);
-  console.log('All users before filtering:', users);
+  const currentUserId = localStorage.getItem("userId");
+  console.log("Current user ID:", currentUserId);
+  console.log("All users before filtering:", users);
 
   // Filter out the logged-in user from the users list
   const filteredUsers = users.filter((user) => {
     // First, exclude the current user
     if (user.id?.toString() === currentUserId) {
-      console.log('Filtering out current user:', user.name, 'with ID:', user.id);
+      console.log(
+        "Filtering out current user:",
+        user.name,
+        "with ID:",
+        user.id
+      );
       return false;
     }
-    
+
     // Then apply search filter
     return (
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.skillsOffered.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      user.skillsWanted.some((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+      user.skillsOffered.some((skill) =>
+        skill.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      user.skillsWanted.some((skill) =>
+        skill.toLowerCase().includes(searchTerm.toLowerCase())
+      )
     );
   });
 
-  console.log('Filtered users after removing current user:', filteredUsers);
+  console.log("Filtered users after removing current user:", filteredUsers);
 
   return (
     <div className="min-h-screen bg-white text-black transition-all duration-300">
@@ -166,7 +189,6 @@ export default function SkillSwapUI() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              
               <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
                 NEXUS
               </h1>
@@ -174,21 +196,31 @@ export default function SkillSwapUI() {
 
             {/* Desktop Navigation */}
             <div className="hidden sm:flex items-center space-x-4">
-              <button 
+              <button
                 className="text-gray-600 hover:text-black transition-colors duration-200"
                 onClick={() => navigate("/landing")}
               >
                 Home
               </button>
-              
+
               {/* Swap Requests Button - Show when logged in */}
               {localStorage.getItem("token") && (
-                <button 
+                <button
                   className="text-gray-600 hover:text-black transition-colors duration-200 flex items-center gap-2 relative"
                   onClick={() => navigate("/swap-requests")}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
                   </svg>
                   Swap Requests
                   <SwapRequestBadge />
@@ -197,31 +229,51 @@ export default function SkillSwapUI() {
 
               {/* Chat Button - Show when logged in */}
               {localStorage.getItem("token") && (
-                <button 
+                <button
                   className="text-gray-600 hover:text-black transition-colors duration-200 flex items-center gap-2 relative"
                   onClick={() => navigate("/chat-list")}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
                   </svg>
                   Chats
                   <ChatBadge />
                 </button>
               )}
-              
+
               {/* Profile Icon - Show when logged in */}
               {localStorage.getItem("token") ? (
                 <div className="relative profile-dropdown">
-                  <button 
+                  <button
                     className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-all duration-200 transform hover:scale-105"
                     onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                     title="My Profile"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
                     </svg>
                   </button>
-                  
+
                   {/* Profile Dropdown */}
                   {showProfileDropdown && (
                     <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-xl shadow-lg z-10 animate-in slide-in-from-top-2 duration-200">
@@ -249,7 +301,7 @@ export default function SkillSwapUI() {
                   )}
                 </div>
               ) : (
-                <button 
+                <button
                   className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all duration-200 transform hover:scale-105"
                   onClick={() => navigate("/login")}
                 >
@@ -259,8 +311,15 @@ export default function SkillSwapUI() {
             </div>
 
             {/* Mobile Menu Button */}
-            <button className="sm:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <button
+              className="sm:hidden p-2"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
 
@@ -271,26 +330,36 @@ export default function SkillSwapUI() {
             }`}
           >
             <div className="py-4 space-y-3 border-t border-gray-100">
-              <button 
+              <button
                 className="block w-full text-left text-gray-600 hover:text-black transition-colors duration-200"
                 onClick={() => navigate("/landing")}
               >
                 About Us
               </button>
-              
+
               {/* Profile Icon - Show when logged in */}
               {localStorage.getItem("token") ? (
-                <button 
+                <button
                   className="w-full bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all duration-200 flex items-center justify-center gap-2"
                   onClick={() => navigate("/profile")}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                   My Profile
                 </button>
               ) : (
-                <button 
+                <button
                   className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all duration-200 w-full"
                   onClick={() => navigate("/login")}
                 >
@@ -306,10 +375,12 @@ export default function SkillSwapUI() {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Exchange Skills, <span className="text-gray-600">Build Connections</span>
+            Exchange Skills,{" "}
+            <span className="text-gray-600">Build Connections</span>
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Connect with talented individuals and trade your expertise for new skills
+            Connect with talented individuals and trade your expertise for new
+            skills
           </p>
         </div>
 
@@ -323,7 +394,9 @@ export default function SkillSwapUI() {
             >
               <span className="font-medium">{availabilityFilter}</span>
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${showDropdown ? "rotate-180" : ""}`}
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  showDropdown ? "rotate-180" : ""
+                }`}
               />
             </button>
 
@@ -334,8 +407,8 @@ export default function SkillSwapUI() {
                     key={option}
                     className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors duration-150 first:rounded-t-xl last:rounded-b-xl"
                     onClick={() => {
-                      setAvailabilityFilter(option)
-                      setShowDropdown(false)
+                      setAvailabilityFilter(option);
+                      setShowDropdown(false);
                     }}
                   >
                     {option}
@@ -367,7 +440,11 @@ export default function SkillSwapUI() {
               <p className="text-red-600">Error: {error}</p>
             ) : (
               <p className="text-gray-600">
-                Showing <span className="font-semibold text-black">{filteredUsers.length}</span> skilled individuals
+                Showing{" "}
+                <span className="font-semibold text-black">
+                  {filteredUsers.length}
+                </span>{" "}
+                skilled individuals
               </p>
             )}
           </div>
@@ -376,8 +453,18 @@ export default function SkillSwapUI() {
             disabled={loading}
             className="text-gray-600 hover:text-black transition-colors duration-200 flex items-center gap-2"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
             </svg>
             Refresh
           </button>
@@ -388,7 +475,10 @@ export default function SkillSwapUI() {
           {loading ? (
             // Loading skeleton
             Array.from({ length: 3 }).map((_, idx) => (
-              <div key={idx} className="bg-white border border-gray-100 rounded-2xl p-6 animate-pulse">
+              <div
+                key={idx}
+                className="bg-white border border-gray-100 rounded-2xl p-6 animate-pulse"
+              >
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                   <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-200 rounded-full"></div>
                   <div className="flex-1 space-y-3">
@@ -406,7 +496,7 @@ export default function SkillSwapUI() {
           ) : error ? (
             <div className="text-center py-12">
               <p className="text-red-600 mb-4">Failed to load users</p>
-              <button 
+              <button
                 onClick={fetchUsers}
                 className="bg-black text-white px-6 py-2 rounded-full hover:bg-gray-800 transition-all duration-200"
               >
@@ -425,14 +515,14 @@ export default function SkillSwapUI() {
                 onClick={() => {
                   const token = localStorage.getItem("token");
                   const isLoggedIn = !!token;
-                  
+
                   if (!isLoggedIn) {
                     navigate("/login");
                   } else {
-                    navigate("/profilerequest", { 
-                      state: { 
-                        selectedUser: user 
-                      } 
+                    navigate("/profilerequest", {
+                      state: {
+                        selectedUser: user,
+                      },
                     });
                   }
                 }}
@@ -458,7 +548,9 @@ export default function SkillSwapUI() {
                     {/* Skills */}
                     <div className="space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-green-700">Offers:</span>
+                        <span className="text-sm font-medium text-green-700">
+                          Offers:
+                        </span>
                         {user.skillsOffered.map((skill, skillIdx) => (
                           <span
                             key={skillIdx}
@@ -469,7 +561,9 @@ export default function SkillSwapUI() {
                         ))}
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-medium text-blue-700">Wants:</span>
+                        <span className="text-sm font-medium text-blue-700">
+                          Wants:
+                        </span>
                         {user.skillsWanted.map((skill, skillIdx) => (
                           <span
                             key={skillIdx}
@@ -488,12 +582,16 @@ export default function SkillSwapUI() {
                           <Star
                             key={i}
                             className={`w-4 h-4 ${
-                              i < Math.floor(user.rating) ? "text-yellow-400 fill-current" : "text-gray-300"
+                              i < Math.floor(user.rating)
+                                ? "text-yellow-400 fill-current"
+                                : "text-gray-300"
                             }`}
                           />
                         ))}
                       </div>
-                      <span className="text-sm font-medium">{user.rating}/5</span>
+                      <span className="text-sm font-medium">
+                        {user.rating}/5
+                      </span>
                     </div>
                   </div>
 
@@ -508,17 +606,19 @@ export default function SkillSwapUI() {
                       console.log("Token:", token);
                       const isLoggedIn = !!token;
                       console.log("Is logged in:", isLoggedIn);
-                      
+
                       if (!isLoggedIn) {
                         console.log("Redirecting to login...");
                         navigate("/login");
                       } else {
-                        console.log("User is logged in, proceeding with swap request");
+                        console.log(
+                          "User is logged in, proceeding with swap request"
+                        );
                         // Navigate to profile requester page with user data
-                        navigate("/profilerequest", { 
-                          state: { 
-                            selectedUser: user 
-                          } 
+                        navigate("/profilerequest", {
+                          state: {
+                            selectedUser: user,
+                          },
                         });
                       }
                     }}
@@ -533,31 +633,16 @@ export default function SkillSwapUI() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 flex-wrap">
-          {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-            <button
-              key={num}
-              className={`w-10 h-10 rounded-full transition-all duration-200 font-medium ${
-                num === currentPage
-                  ? "bg-black text-white shadow-lg transform scale-110"
-                  : "border border-gray-200 hover:border-gray-400 hover:bg-gray-50"
-              }`}
-              onClick={() => setCurrentPage(num)}
-            >
-              {num}
-            </button>
-          ))}
-        </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-gray-100 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-500">
-            <p>&copy; 2024 SkillSwap Platform. Connect. Learn. Grow.</p>
+            <p>&copy; 2025 Nexus Platform. Connect. Learn. Grow.</p>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
